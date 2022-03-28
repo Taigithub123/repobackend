@@ -4,6 +4,7 @@ import com.example.booking.dto.ProductDto;
 import com.example.booking.model.Product;
 import com.example.booking.repository.ProductRepository;
 import com.example.booking.service.FilesStorageService;
+import com.example.booking.service.ProductService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,14 +19,14 @@ import java.util.List;
 @RequestMapping("/api/products") //tro den API
 public class ProductsController {
     @Autowired
-    ProductRepository productRepository; //autowired truc tiep ket noi voi productRepository
+    private ProductService productService; //autowired truc tiep ket noi voi productRepository
     @Autowired
     FilesStorageService storageService;
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts(){
         try{
             List<Product> products = new ArrayList<Product>();
-            productRepository.findAll().forEach(products::add);
+            productService.findAll().forEach(products::add);
             return new ResponseEntity<>(products, HttpStatus.OK);
         }
         catch (Exception e){
@@ -38,7 +39,7 @@ public class ProductsController {
     public ResponseEntity<Product> createProduct( @ModelAttribute ProductDto product){
         try {
             String fileName = storageService.save(product.getImage());
-            Product newProduct = productRepository.save(new Product(product.getTitle(),product.getCategory(),product.getDescription(),product.getPrice(),fileName));
+            Product newProduct = productService.save(new Product(product.getTitle(),product.getCategory(),product.getDescription(),product.getPrice(),fileName));
             return new ResponseEntity<>(newProduct,HttpStatus.CREATED); //HttpStatus.CREATED: tra ve httpstatus code 201:tao thanh cong
         }
         catch (Exception e){
@@ -47,8 +48,14 @@ public class ProductsController {
         }
 
     }
-    @PostMapping("/update")
-    public String update(){
-        return "update";
+    @PostMapping("/update/{id}")
+    public Product update(@RequestBody Product product, @PathVariable("id") long id){
+        return productService.update(product, id);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") long id){
+        productService.delete(id);
+        return ResponseEntity.ok("Nice");
     }
 }

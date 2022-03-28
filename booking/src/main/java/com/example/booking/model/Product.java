@@ -27,18 +27,18 @@ public class Product {
     private String description;
     @Column(name = "price")
     private float price;
-    @Column (name  ="image")
+    @Column(name = "image")
     private String image;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "createdAt")
     private Date createdAt;
 
-    public Product(String title,Category category, String description, float price, String image) {
+    public Product(String title, Category category, String description, float price, String image) {
         this.title = title;
         this.description = description;
         this.price = price;
         this.image = image;
-        this.category  = category;
+        this.category = category;
     }
 }
